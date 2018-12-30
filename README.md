@@ -12,13 +12,13 @@ This will install all dependencies in pip environment:
 This will download SNLI datasets and GloVe word pretrained vectors and
 preprocess vocabulary:
 ```bash
-./fetch_and_preprocess.sh
+./download_and_preprocess.sh
 ```
-## Train model on Natural Language Inference (SNLI)
+## Train model on Natural Language Inference (NLI)
 ```bash
 ./train.sh
 ```
-## Test model on Natural Language Inference (SNLI)
+## Test model on Natural Language Inference (NLI)
 ```bash
 ./test.sh
 ```
