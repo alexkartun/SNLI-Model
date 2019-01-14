@@ -26,7 +26,6 @@ parser.add_argument("-model_name", type=str, default='model.pickle')
 # training
 parser.add_argument("--epochs", type=int, default=5)
 parser.add_argument("--batch_size", type=int, default=64)
-parser.add_argument("--dev_every", type=int, default=2)
 parser.add_argument("--decay", type=float, default=0.99, help="lr decay")
 parser.add_argument("--lrshrink", type=float, default=5, help="shrink factor for sgd")
 parser.add_argument("--minlr", type=float, default=1e-5, help="minimum lr")
