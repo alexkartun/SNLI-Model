@@ -24,15 +24,19 @@ parser.add_argument("--output_dir", type=str, default='.output', help="Output di
 parser.add_argument("-model_name", type=str, default='model.pickle')
 
 # training
-parser.add_argument("--epochs", type=int, default=4)
-parser.add_argument("--batch_size", type=int, default=256)
+parser.add_argument("--epochs", type=int, default=5)
+parser.add_argument("--batch_size", type=int, default=64)
 parser.add_argument("--dev_every", type=int, default=2)
+parser.add_argument("--decay", type=float, default=0.99, help="lr decay")
+parser.add_argument("--lrshrink", type=float, default=5, help="shrink factor for sgd")
+parser.add_argument("--minlr", type=float, default=1e-5, help="minimum lr")
 parser.add_argument("--learning_rate", type=float, default=0.1, help="learning rate")
 
 
 # model
-parser.add_argument("--lstm_dim", type=int, default=2048, help="lstm hidden state dimension")
+parser.add_argument("--lstm_dim", type=int, default=4096, help="lstm hidden state dimension")
 parser.add_argument("--lstm_layers", type=int, default=1, help="lstm num layers")
+parser.add_argument("--dropout_fc", type=float, default=0., help="classifier dropout")
 parser.add_argument("--mlp_dim", type=int, default=512, help="hidden dim of mlp layers")
 parser.add_argument("--output_dim", type=int, default=3, help="entailment/neutral/contradiction")
 
@@ -71,6 +75,7 @@ config_nli_model = {
     'word_emb_dim': config.word_emb_dim,
     'lstm_dim': config.lstm_dim,
     'lstm_layers': config.lstm_layers,
+    'dropout_fc': config.dropout_fc,
     'mlp_dim': config.mlp_dim,
     'output_dim': config.output_dim
 }
@@ -82,7 +87,7 @@ nli_net = NLINet(config_nli_model)
 loss_fn = nn.CrossEntropyLoss()
 
 # optimizer
-optimizer = optim.Adam(nli_net.parameters(), config.learning_rate)
+optimizer = optim.SGD(nli_net.parameters(), config.learning_rate)
 
 """
 TRAIN
@@ -90,7 +95,6 @@ TRAIN
 
 
 dev_acc_best = -1e10
-second_chance = True
 stop_training = False
 
 
@@ -99,16 +103,16 @@ def train_model(ep):
     nli_net.train()
 
     correct = 0.
-    iterations = 0
-    global stop_training
 
     premises = train['premise']
     hypothesises = train['hypothesis']
     targets = train['label']
 
+    if ep > 1:
+        optimizer.param_groups[0]['lr'] = optimizer.param_groups[0]['lr'] * config.decay
+
     for idx in range(0, len(premises), config.batch_size):
-        if stop_training:
-            break
+
         # prepare batch
         premises_batch, premises_len = ut.get_batch(premises[idx:idx + config.batch_size],
                                                     word_vectors, config.word_emb_dim)
@@ -133,15 +137,8 @@ def train_model(ep):
         # optimizer step
         optimizer.step()
 
-        # update iterations
-        iterations += 1
-
-        # evaluate performance
-        if iterations % config.dev_every == 0:
-            evaluate_model(ep)
-
     # calculate overall accuracy on train
-    train_acc = 100 * correct / len(premises)
+    train_acc = round(100 * correct / len(premises), 2)
     print('results : epoch {0} ; accuracy on train {1}'
           .format(ep, train_acc))
 
@@ -151,7 +148,7 @@ def evaluate_model(ep):
     nli_net.eval()
 
     correct = 0.
-    global dev_acc_best, second_chance, stop_training
+    global dev_acc_best, stop_training
 
     premises = dev['premise']
     hypothesises = dev['hypothesis']
@@ -173,38 +170,36 @@ def evaluate_model(ep):
         correct += pred.long().eq(targets_batch.data.long()).cpu().sum().item()
 
     # calculate overall accuracy on dev
-    eval_acc = 100 * correct / len(premises)
+    eval_acc = round(100 * correct / len(premises), 2)
     print('results : epoch {0} ; accuracy on dev {1}'
           .format(ep, eval_acc))
     
     # check for early stopping
     if eval_acc > dev_acc_best:
+        # saving best model for now
+        print('saving model at epoch {0}'.format(epoch))
+        if not os.path.exists(config.output_dir):
+            os.makedirs(config.output_dir)
+        torch.save(nli_net.state_dict(), os.path.join(config.output_dir,
+                                                      config.model_name))
         dev_acc_best = eval_acc
     else:
-        stop_training = not second_chance
-        second_chance = False
+        optimizer.param_groups[0]['lr'] = optimizer.param_groups[0]['lr'] / config.lrshrink
+        if optimizer.param_groups[0]['lr'] < config.minlr:
+            stop_training = True
 
 
 """
 Train model on NLI task
 """
-epoch = 1
 
 start = time.time()
+epoch = 1
+
 while not stop_training and epoch <= config.epochs:
     train_model(epoch)
+    evaluate_model(epoch)
     epoch += 1
+
 end = time.time()
 print('training time: {}'.format(str(end - start)))
-
-
-"""
-Save trained model
-"""
-
-
-print('saving model at epoch {0}'.format(epoch))
-if not os.path.exists(config.output_dir):
-    os.makedirs(config.output_dir)
-torch.save(nli_net.state_dict(), os.path.join(config.output_dir,
-                                              config.model_name))

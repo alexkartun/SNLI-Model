@@ -11,7 +11,7 @@ import os
 ARGUMENTS
 """
 
-parser = argparse.ArgumentParser(description='NLI training')
+parser = argparse.ArgumentParser(description='NLI testing')
 
 # paths
 parser.add_argument("--nli_path", type=str, default='.data/SNLI/snli_1.0/', help="NLI data path")
@@ -21,12 +21,13 @@ parser.add_argument("--output_dir", type=str, default='.output', help="Output di
 parser.add_argument("--model_name", type=str, default='model.pickle')
 
 # testing
-parser.add_argument("--batch_size", type=int, default=256)
+parser.add_argument("--batch_size", type=int, default=64)
 
 
 # model
-parser.add_argument("--lstm_dim", type=int, default=2048, help="lstm hidden state dimension")
+parser.add_argument("--lstm_dim", type=int, default=4096, help="lstm hidden state dimension")
 parser.add_argument("--lstm_layers", type=int, default=1, help="lstm num layers")
+parser.add_argument("--dropout_fc", type=float, default=0., help="classifier dropout")
 parser.add_argument("--mlp_dim", type=int, default=512, help="hidden dim of mlp layers")
 parser.add_argument("--output_dim", type=int, default=3, help="entailment/neutral/contradiction")
 
@@ -65,6 +66,7 @@ config_nli_model = {
     'word_emb_dim': config.word_emb_dim,
     'lstm_dim': config.lstm_dim,
     'lstm_layers': config.lstm_layers,
+    'dropout_fc': config.dropout_fc,
     'mlp_dim': config.mlp_dim,
     'output_dim': config.output_dim
 }
@@ -102,8 +104,8 @@ def test_model():
         pred = output.data.max(1)[1]
         correct += pred.long().eq(targets_batch.data.long()).cpu().sum().item()
 
-    # calculate overall accuracy on dev
-    test_acc = 100 * correct / len(premises)
+    # calculate overall accuracy on test
+    test_acc = round(100 * correct / len(premises), 2)
     print('accuracy on test {0}'
           .format(test_acc))
 

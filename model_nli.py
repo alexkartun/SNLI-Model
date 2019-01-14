@@ -17,13 +17,17 @@ class NLINet(nn.Module):
         self.input_dim = 4 * 2 * self.lstm_dim
 
         # classifier
+        self.dpout_fc = config['dropout_fc']
         self.mlp_dim = config['mlp_dim']
         self.output_dim = config['output_dim']
         self.classifier = nn.Sequential(
+            nn.Dropout(p=self.dpout_fc),
             nn.Linear(self.input_dim, self.mlp_dim),
             nn.Tanh(),
+            nn.Dropout(p=self.dpout_fc),
             nn.Linear(self.mlp_dim, self.mlp_dim),
             nn.Tanh(),
+            nn.Dropout(p=self.dpout_fc),
             nn.Linear(self.mlp_dim, self.output_dim)
         )
 
@@ -73,5 +77,4 @@ class BiLSTMMaxPoolEncoder(nn.Module):
 
         # Max pooling
         emb = torch.max(sent_output, 0)[0]
-
         return emb
