@@ -6,7 +6,7 @@ FILE_EXTENSION = 'jsonl'
 
 
 def download(url, dir_path):
-
+    """ downloading data from url to directory """
     print('downloading {}...'.format(url))
     file_name = url.split('/')[-1]
     file_path = os.path.join(dir_path, file_name)
@@ -16,10 +16,11 @@ def download(url, dir_path):
 
 
 def unzip(file_path, is_snli):
-
+    """ unzipping data from file """
     print("extracting: {}...".format(file_path))
     dir_path = os.path.dirname(file_path)
     with zipfile.ZipFile(file_path, 'r') as z:
+        # if SNLI file so unzip only files that are ends with file extension
         if is_snli:
             for name in z.namelist():
                 if name.endswith(FILE_EXTENSION):
@@ -31,19 +32,18 @@ def unzip(file_path, is_snli):
 
 
 def download_snli(dir_path):
-
+    """ download SNLI data set """
     url = 'https://nlp.stanford.edu/projects/snli/snli_1.0.zip'
     unzip(download(url, dir_path), True)
 
 
 def download_wordvecs(dir_path):
-
+    """ download GloVe data set """
     url = 'http://www-nlp.stanford.edu/data/glove.840B.300d.zip'
     unzip(download(url, dir_path), False)
 
 
 def main():
-
     # define paths
     project_dir = os.path.dirname(os.path.realpath(__file__))
     data_dir = os.path.join(project_dir, '.data')

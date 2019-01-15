@@ -14,6 +14,7 @@ parser.add_argument("--vocab_path", type=str, default='.data/GloVe/vocab.pickle'
 
 
 def build_vocab(sentences, glove_path):
+    """ building vocabulary of words where each word mapped to embedding vector"""
     print('building vocab from {}...'.format(glove_path))
     word_dict = get_word_dict(sentences)
     vocab = get_glove(word_dict, glove_path)
@@ -22,6 +23,7 @@ def build_vocab(sentences, glove_path):
 
 
 def get_word_dict(sentences):
+    """ getting vocabulary of words of SNLI data set"""
     word_dict = {}
     for sentence in sentences:
         for word in nltk.word_tokenize(sentence):
@@ -33,6 +35,8 @@ def get_word_dict(sentences):
 
 
 def get_glove(word_dict, glove_path):
+    """ building vocabulary of all words that only appear in prebuilt map,
+        each word will be mapped to embedding vector"""
     vocab = {}
     with open(glove_path, encoding="utf8") as f:
         for line in f:

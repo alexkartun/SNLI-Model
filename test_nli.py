@@ -80,6 +80,7 @@ TEST
 
 
 def test_model():
+    """ testing the model """
     print('TESTING')
     nli_net.eval()
 
@@ -118,4 +119,5 @@ Test model on Natural Language Inference task
 # Run best model on test set.
 nli_net.load_state_dict(torch.load(os.path.join(config.output_dir, config.model_name)))
 
+# testing
 test_model()

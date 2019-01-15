@@ -8,6 +8,7 @@ Module for NLI
 
 
 class NLINet(nn.Module):
+    """ SNLI Module """
     def __init__(self, config):
         super(NLINet, self).__init__()
 
@@ -32,6 +33,7 @@ class NLINet(nn.Module):
         )
 
     def forward(self, premises, hypothesises):
+        """ forward step of the SNLI Module """
         # premise : (premises_batch, premises_len)
         u = self.encoder(premises)
         v = self.encoder(hypothesises)
@@ -47,6 +49,7 @@ Bidirectional LSTM with max pooling
 
 
 class BiLSTMMaxPoolEncoder(nn.Module):
+    """ Encoder Module """
     def __init__(self, config):
         super(BiLSTMMaxPoolEncoder, self).__init__()
         self.word_emb_dim = config['word_emb_dim']
@@ -56,6 +59,7 @@ class BiLSTMMaxPoolEncoder(nn.Module):
                                 bidirectional=True)
 
     def forward(self, sent_tuple):
+        """ forward step of the Encoder Module """
         sent, sent_len = sent_tuple
 
         # Sort by length (keep idx)

@@ -98,6 +98,7 @@ stop_training = False
 
 
 def train_model(ep):
+    """ training the model on train data set """
     print('TRAINING : Epoch {0}'.format(ep))
     nli_net.train()
 
@@ -107,6 +108,7 @@ def train_model(ep):
     hypothesises = train['hypothesis']
     targets = train['label']
 
+    # decay the learning rate to avoid overfitting
     if ep > 1:
         optimizer.param_groups[0]['lr'] = optimizer.param_groups[0]['lr'] * config.decay
 
@@ -143,6 +145,7 @@ def train_model(ep):
 
 
 def evaluate_model(ep):
+    """ evaluating the model on dev data set"""
     print('VALIDATION : Epoch {0}'.format(ep))
     nli_net.eval()
 
@@ -181,9 +184,12 @@ def evaluate_model(ep):
             os.makedirs(config.output_dir)
         torch.save(nli_net.state_dict(), os.path.join(config.output_dir,
                                                       config.model_name))
+        # set new best accuracy
         dev_acc_best = eval_acc
     else:
+        # shrink the learning rate by factor of 5 as default
         optimizer.param_groups[0]['lr'] = optimizer.param_groups[0]['lr'] / config.lrshrink
+        # stop the training of learning rate is lower than the minimal possible rate
         if optimizer.param_groups[0]['lr'] < config.minlr:
             stop_training = True
 

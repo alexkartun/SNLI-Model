@@ -6,6 +6,7 @@ import torch
 
 
 def splits(data_path):
+    """ splitting all data from train/dev/test data sets """
     print('splitting data {}...'.format(data_path))
     train = {}
     dev = {}
@@ -27,6 +28,7 @@ def splits(data_path):
 
 
 def save_vocab(path, vocab):
+    """ saving vocabulary of words to file """
     print('saving vocab to {}...'.format(path))
     with open(path, 'wb') as handle:
         pickle.dump(vocab, handle, protocol=pickle.HIGHEST_PROTOCOL)
@@ -34,6 +36,7 @@ def save_vocab(path, vocab):
 
 
 def load_vocab(path):
+    """ loading vocabulary of words from file """
     print('loading vocab from {}...'.format(path))
     with open(path, 'rb') as handle:
         vocab = pickle.load(handle)
@@ -42,7 +45,8 @@ def load_vocab(path):
 
 
 def get_batch(batch, word_vectors, emb_dim=300):
-    # sent in batch in order of (bsize, max_len, word_dim)
+    """ getting batch of sentences with 3d dim """
+    # sent in batch in order of (bsize, max_len, word_dim=300)
     lengths = np.array([len(x) for x in batch])
     max_len = np.max(lengths)
     embed = np.zeros((max_len, len(batch), emb_dim))
