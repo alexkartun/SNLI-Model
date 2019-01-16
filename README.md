@@ -4,7 +4,7 @@ This code is written in python 3.7. Dependencies include:
 * Numpy
 * Pytorch For 3.7 - Windows
 * NLTK
-This will install all dependencies in pip environment:
+####This will install all dependencies in pip environment:
 ```bash
 ./install.sh
 ```
