@@ -1,4 +1,4 @@
-### You must run run the scripts on windows platform and linux bash f.e Git bash.
+### You must run run the scripts on windows platform and linux bash f.e git bash.
 ## Dependencies
 This code is written in python 3.7. Dependencies include:
 * Numpy
@@ -9,6 +9,7 @@ This will install all dependencies in pip environment:
 ./install.sh
 ```
 * The 'install.sh' script is not must but you must have all dependencies installed on windows platform.
+### From here you need to run all the scripts.
 ## Fetch and preprocess the data
 This will download SNLI datasets and GloVe word pretrained vectors and
 preprocess vocabulary:
