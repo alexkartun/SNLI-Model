@@ -2,7 +2,7 @@
 ## Dependencies
 This code is written in python 3.7. Dependencies include:
 * Numpy
-* Pytorch For 3.7 - Windows 64 bit
+* Pytorch For 3.7 - Windows 64 bit without cuda.
 * NLTK
 #### This will install all dependencies in pip environment:
 ```bash
@@ -11,8 +11,7 @@ This code is written in python 3.7. Dependencies include:
 * The 'install.sh' script is not must but you must have all dependencies installed on windows platform.
 ### From here you need to run all the scripts.
 ## Fetch and preprocess the data
-#### This will download SNLI datasets and GloVe word pretrained vectors and
-preprocess vocabulary:
+#### This will download SNLI datasets and GloVe word pretrained vectors and preprocess vocabulary:
 ```bash
 ./download_and_preprocess.sh
 ```
