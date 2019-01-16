@@ -1,4 +1,4 @@
-## You must run run the scripts on windows platform and linux bash f.e Git bash.
+# You must run run the scripts on windows platform and linux bash f.e Git bash.
 ## Dependencies
 This code is written in python 3.7. Dependencies include:
 * Numpy
