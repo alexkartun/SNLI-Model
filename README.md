@@ -1,9 +1,9 @@
+* You should run all the scripts in linux shell on windows platform.
 ## Dependencies
 This code is written in python 3.7. Dependencies include:
 * Numpy
 * Pytorch For 3.7
 * NLTK
-
 This will install all dependencies in pip environment:
 ```bash
 ./install.sh
@@ -22,7 +22,6 @@ preprocess vocabulary:
 ```bash
 ./test.sh
 ```
-* You should obtain a dev accuracy of 84.5 and a test accuracy of 83.3
 ## Contributors
 ```
 title     = {Supervised Learning of NLI task}
